@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta Meteorológica</title>
+</head>
+<body>
+    <h1>Consulta de Temperatura</h1>
+    <p>Abra o console do navegador (F12) para ver o resultado.</p>
+
+    <script>
+        // Função para validar o nome da cidade
+        function validateCityName(city) {
+            const cityRegex = /^[A-Za-zÀ-ÿ\s-]+$/;
+            return cityRegex.test(city);
+        }
+
+        // Função assíncrona para consultar os dados meteorológicos da cidade
+        async function getWeather(city) {
+            const apiKey = '0a2af57bcb0c885f3ca5c46621690648'; // Sua chave de API
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)},BR&appid=${apiKey}&units=metric&lang=pt_br`;
+
+            try {
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error("Cidade não encontrada ou erro na API.");
+                }
+
+                const data = await response.json();
+                return data.main.temp;
+            } catch (error) {
+                console.error("Erro ao buscar dados da API:", error.message);
+                return null;
+            }
+        }
+
+        // Função principal
+        async function main() {
+            const city = prompt("Digite o nome de uma cidade brasileira:");
+
+            if (!validateCityName(city)) {
+                console.log("Nome de cidade inválido. Use apenas letras, espaços ou traços.");
+                return;
+            }
+
+            console.log(`Buscando dados meteorológicos para "${city}"...`);
+
+            const temperatura = await getWeather(city);
+
+            if (temperatura !== null) {
+                console.log(`🌤️ A temperatura atual em ${city} é de ${temperatura}°C.`);
+            } else {
+                console.log("❌ Não foi possível obter os dados meteorológicos.");
+            }
+        }
+
+        // Executa o código
+        main();
+    </script>
+</body>
+</html>
